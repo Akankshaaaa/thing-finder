@@ -30,9 +30,9 @@ git clone https://github.com/yourusername/thing-finder.git
 npm install
 ```
 
-3. Start the development server
+3. Install dependencies
 ```
-npm start
+npm install
 ```
 
 4. Start the development server

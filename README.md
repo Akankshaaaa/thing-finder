@@ -25,9 +25,9 @@ Thing Finder is a pastel-themed web application that helps you keep track of you
 git clone https://github.com/yourusername/thing-finder.git
 ```
 
-2. Install dependencies
+2. Navigate to the project directory
 ```
-npm install
+cd thing-finder
 ```
 
 3. Install dependencies

@@ -2,11 +2,26 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { searchItems } from '../services/api';
 import Logo from '../components/Logo';
+import { DocumentIcon, EyeIcon } from '@heroicons/react/24/outline';
+import ImageViewer from '../components/ImageViewer';
 
 const Home = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResult, setSearchResult] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null);
   const navigate = useNavigate();
+
+  const formatTimestamp = (timestamp) => {
+    if (!timestamp) return '';
+    const date = new Date(timestamp);
+    return date.toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -68,7 +83,7 @@ const Home = () => {
         </div>
       </form>
 
-      {/* Search Results */}
+      {/* Updated Search Results */}
       {searchResult && (
         <div className="w-full max-w-2xl animate-fadeIn">
           {searchResult.length === 0 ? (
@@ -87,26 +102,74 @@ const Home = () => {
           ) : (
             <div className="space-y-4">
               {searchResult.map((item) => (
-                <div
-                  key={item.id}
-                  className="p-4 bg-white rounded-lg shadow-md flex items-center justify-between"
-                >
-                  <div>
-                    <h3 className="font-quicksand font-bold text-lg">{item.itemName}</h3>
-                    <p className="font-poppins text-sm text-gray-600">{item.location}</p>
+                <div key={item.id} className="p-4 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                  <div className="flex gap-4">
+                    {/* Image Section */}
+                    <div className="w-32 h-32 flex-shrink-0 relative group">
+                      {item.photo_url ? (
+                        <>
+                          <img
+                            src={item.photo_url}
+                            alt={item.itemName}
+                            className="w-full h-full object-cover rounded-lg cursor-pointer"
+                            onClick={() => setSelectedImage({ url: item.photo_url, alt: item.itemName })}
+                          />
+                          <button
+                            onClick={() => setSelectedImage({ url: item.photo_url, alt: item.itemName })}
+                            className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center"
+                          >
+                            <EyeIcon className="h-6 w-6 text-white" />
+                          </button>
+                        </>
+                      ) : (
+                        <div className="w-full h-full bg-pastel-yellow/30 rounded-lg flex items-center justify-center">
+                          <DocumentIcon className="h-12 w-12 text-pastel-yellow" />
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Content Section */}
+                    <div className="flex-grow">
+                      <h3 className="font-quicksand font-bold text-lg mb-2">{item.itemName}</h3>
+                      <p className="font-poppins text-sm text-gray-600 mb-1">
+                        <span className="font-medium">Location:</span> {item.location}
+                      </p>
+                      {item.additionalInfo && (
+                        <p className="font-poppins text-sm text-gray-500 mb-1">
+                          <span className="font-medium">Additional Info:</span> {item.additionalInfo}
+                        </p>
+                      )}
+                      <div className="text-xs text-gray-400 font-poppins mt-2">
+                        <p>Added: {formatTimestamp(item.created_at)}</p>
+                        {item.updated_at && item.updated_at !== item.created_at && (
+                          <p>Last Updated: {formatTimestamp(item.updated_at)}</p>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                  <button
-                    onClick={() => handleUpdate(item)}
-                    className="px-4 py-2 rounded-full bg-pastel-lavender text-gray-700
-                             hover:bg-opacity-80 transition-colors font-poppins"
-                  >
-                    Update Location
-                  </button>
+
+                  <div className="mt-4 flex justify-end">
+                    <button
+                      onClick={() => handleUpdate(item)}
+                      className="px-4 py-2 rounded-full bg-pastel-lavender text-gray-700
+                               hover:bg-opacity-80 transition-colors font-poppins"
+                    >
+                      Update Location
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
           )}
         </div>
+      )}
+
+      {selectedImage && (
+        <ImageViewer
+          imageUrl={selectedImage.url}
+          altText={selectedImage.alt}
+          onClose={() => setSelectedImage(null)}
+        />
       )}
     </div>
   );

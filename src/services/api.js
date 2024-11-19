@@ -13,12 +13,21 @@ const saveItems = (items) => {
 export const addItem = async (itemData, isUpdate = false) => {
   try {
     const items = getStoredItems();
+    
+    // If updating, get the existing item's photo
+    let existingPhoto = null;
+    if (isUpdate) {
+      const existingItem = items.find(item => item.id === itemData.itemId);
+      existingPhoto = existingItem?.photo_url;
+    }
+
     const newItem = {
       id: isUpdate ? itemData.itemId : Date.now().toString(),
       itemName: itemData.itemName,
       location: itemData.location,
       additionalInfo: itemData.additionalInfo,
-      photo_url: itemData.photo ? URL.createObjectURL(itemData.photo) : null,
+      // Keep existing photo if no new photo is provided
+      photo_url: itemData.photo ? URL.createObjectURL(itemData.photo) : (isUpdate ? existingPhoto : null),
       created_at: isUpdate ? itemData.created_at : new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
@@ -70,4 +79,8 @@ export const getAllItems = async () => {
     console.error('Error getting items:', error);
     throw error;
   }
+};
+
+export const clearAllItems = () => {
+  localStorage.removeItem(STORAGE_KEY);
 }; 

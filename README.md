@@ -22,7 +22,7 @@ Thing Finder is a pastel-themed web application that helps you keep track of you
 
 1. Clone the repository 
 ```
-git clone https://github.com/yourusername/thing-finder.git
+git clone https://github.com/Akankshaaaa/thing-finder.git
 ```
 
 2. Navigate to the project directory
